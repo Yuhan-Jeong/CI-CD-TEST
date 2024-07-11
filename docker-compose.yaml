@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    restart: always
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./volumes/mariadb/data:/var/lib/mysql
+    environment:
+      TZ: UTC
+      MARIADB_ROOT_PASSWORD: test1234
+      MARIADB_DATABASE: test
+      MARIADB_USER: admin
+      MARIADB_PASSWORD: test1234
+    ports:
+      - 3306:3306
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: test1234
+      MONGO_INITDB_DATABASE: test
+    volumes:
+      - ./volumes/mongodb/data:/data
+    ports:
+      - 27017:27017
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    command: redis-server --port 6379
+    hostname: redis_boot
+    volumes:
+      - ./volumes/redis/data:/data
+      - ./volumes/redis/conf/redis.conf:/usr/local/conf/redis.conf
+    labels:
+      - name=redis
+      - mode=standalone
+    ports:
+      - 6379:6379
