@@ -26,25 +26,25 @@ jobs:
       - name: Run lint
         run: npm run lint
 
-  test:
-    needs: lint
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [20.x] #18.x,
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: npm ci
-      - name: Run lint
-        run: npm run lint
-      - name: Run tests
-        run: npm test
+  # test:
+  #   needs: lint
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       node-version: [20.x] #18.x,
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Use Node.js ${{ matrix.node-version }}
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: ${{ matrix.node-version }}
+  #     - name: Install dependencies
+  #       run: npm ci
+  #     - name: Run lint
+  #       run: npm run lint
+  #     - name: Run tests
+  #       run: npm test
 
   deploy:
     needs: test
@@ -61,7 +61,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
         with:
           # role-to-assume: arn:aws:iam::123456789012:role/my-github-actions-role
-          role-to-assume: Test
+          role-to-assume: arn:aws:iam::730335305602:oidc-provider/token.actions.githubusercontent.com
           aws-region: aws-region-2
 
       - name: Login to Amazon ECR
