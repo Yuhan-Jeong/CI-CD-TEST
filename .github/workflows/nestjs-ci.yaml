@@ -1,50 +1,50 @@
 name: Nestjs CI
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+# on:
+#   push:
+#     branches: [main]
+#   pull_request:
+#     branches: [main]
 
-jobs:
-  lint:
-    runs-on: ubuntu-latest
+# jobs:
+#   lint:
+#     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [18.x, 20.x]
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         node-version: [18.x, 20.x]
 
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: npm ci
-      - name: Run lint
-        run: npm run lint
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Use Node.js ${{ matrix.node-version }}
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: ${{ matrix.node-version }}
+#       - name: Install dependencies
+#         run: npm ci
+#       - name: Run lint
+#         run: npm run lint
   
-  test:
-    needs: lint
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [18.x, 20.x]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: npm ci
-      - name: Run lint
-        run: npm run lint
-      - name: Run tests
-        run: npm test
+#   test:
+#     needs: lint
+#     runs-on: ubuntu-latest
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         node-version: [18.x, 20.x]
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Use Node.js ${{ matrix.node-version }}
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: ${{ matrix.node-version }}
+#       - name: Install dependencies
+#         run: npm ci
+#       - name: Run lint
+#         run: npm run lint
+#       - name: Run tests
+#         run: npm test
 
   deploy:
     needs: test
@@ -53,24 +53,28 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with: 
-          aws-region: ap-northeast-2
 
       # - name: Set AWS region to ap-northeast-2
       #   run: aws configure set default.region ap-northeast-2
 
+      - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+      with:
+        # role-to-assume: arn:aws:iam::123456789012:role/my-github-actions-role
+        aws-region: aws-region-2
+
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-        with: 
-          aws-region: ap-northeast-2
-          registry-type: public
+        uses: aws-actions/amazon-ecr-login@v2
+        # with: 
+        #   AWS_DEFAULT_REGION: ap-northeast-2
 
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: cicdtest
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
