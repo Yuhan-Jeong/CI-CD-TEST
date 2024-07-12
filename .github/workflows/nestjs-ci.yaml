@@ -25,7 +25,7 @@ jobs:
         run: npm ci
       - name: Run lint
         run: npm run lint
-  
+
   test:
     needs: lint
     runs-on: ubuntu-latest
@@ -58,17 +58,16 @@ jobs:
       #   run: aws configure set default.region ap-northeast-2
 
       - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
-      with:
+        uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+        with:
         # role-to-assume: arn:aws:iam::123456789012:role/my-github-actions-role
         aws-region: aws-region-2
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-        # with: 
+        # with:
         #   AWS_DEFAULT_REGION: ap-northeast-2
-
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
@@ -82,24 +81,24 @@ jobs:
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
       # - name: Deploy to EC2
       #   uses: appleboy/ssh-action@master
-        # with:
-          # host: ${{ secrets.HOST }}
-          # username: ${{ secrets.USERNAME }}
-          # key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # port: ${{ secrets.PORT }}
-          # script: |
-            # # 프로젝트 디렉토리로 이동
-            # cd /home/ubuntu/CI-CD-test
-            
-            # # GitHub에서 최신 코드를 가져옴
-            # git pull origin main
-            
-            # # .env 파일 생성
-            # echo "DB_NAME=${{ secrets.DB_NAME }}" > .env
-            # echo "DB_SYNC=${{ secrets.DB_SYNC }}" >> .env
-            # echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+      # with:
+      # host: ${{ secrets.HOST }}
+      # username: ${{ secrets.USERNAME }}
+      # key: ${{ secrets.SSH_PRIVATE_KEY }}
+      # port: ${{ secrets.PORT }}
+      # script: |
+      # # 프로젝트 디렉토리로 이동
+      # cd /home/ubuntu/CI-CD-test
 
-            # # node 관련 환경 설정 가져오기 위해 실행
-            # source /home/ubuntu/.nvm/nvm.sh
-            # # 서버 실행 시크립트 가동!
-            # source ./run.sh
+      # # GitHub에서 최신 코드를 가져옴
+      # git pull origin main
+
+      # # .env 파일 생성
+      # echo "DB_NAME=${{ secrets.DB_NAME }}" > .env
+      # echo "DB_SYNC=${{ secrets.DB_SYNC }}" >> .env
+      # echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+
+      # # node 관련 환경 설정 가져오기 위해 실행
+      # source /home/ubuntu/.nvm/nvm.sh
+      # # 서버 실행 시크립트 가동!
+      # source ./run.sh
